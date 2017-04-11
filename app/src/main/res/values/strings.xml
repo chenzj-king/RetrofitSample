@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">RetrofitSample</string>
+
+    <!--运行时权限提示语-->
+    <string name="rationale_all">为了更好的用户体验，需要申请以下权限，请点击允许。谢谢！</string>
+    <string name="rationale_ask_again">有部分必要权限没有允许，请打开“设置”允许所有权限。谢谢！</string>
+    <string name="setting">设置</string>
+</resources>

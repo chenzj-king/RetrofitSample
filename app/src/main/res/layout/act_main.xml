@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@drawable/line_divider"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:showDividers="middle"
+        >
+
+        <com.sq580.customhead.CustomHead
+            android:id="@+id/common_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title_text="商品列表"
+            />
+
+        <com.dreamliner.rvhelper.OptimumRecyclerView
+            android:id="@+id/optimum_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            app:rvhelp_layout_empty="@layout/layout_dl_empty"
+            app:rvhelp_layout_loading="@layout/layout_dl_loading"
+            />
+
+    </LinearLayout>
+
+</layout>
