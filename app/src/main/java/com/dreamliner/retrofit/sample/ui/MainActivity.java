@@ -74,7 +74,7 @@ public class MainActivity extends BaseCompatActivity implements OnItemClickListe
                     public void onResponse(PageWrapper<List<Good>> listPageWrapper) {
                         mPage++;
                         if (ValidateUtil.isValidate(listPageWrapper.getData())) {
-                            if (mPage == 1) {
+                            if (isRefresh) {
                                 mAdapter.update(listPageWrapper.getData());
                             } else {
                                 mAdapter.addAll(listPageWrapper.getData());
