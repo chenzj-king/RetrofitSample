@@ -23,7 +23,7 @@ public class AppContext extends Application {
         mInstance = this;
 
         //初始化shop的请求
-        NetManager.INSTANCE.initShopClient();
+        NetManager.INSTANCE.init();
         //初始化单位转换
         PixelUtil.init(this);
     }

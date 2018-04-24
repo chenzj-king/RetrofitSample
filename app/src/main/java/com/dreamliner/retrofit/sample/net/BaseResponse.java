@@ -11,30 +11,27 @@ import com.google.gson.annotations.SerializedName;
  */
 public class BaseResponse<T> {
 
-    @SerializedName("err")
-    private int mErrorCode = -1;
-    @SerializedName("msg")
-    private String mMsg;
+    @SerializedName("message")
+    private String message;
+    @SerializedName("code")
+    private int code;
     @SerializedName("data")
     private T data;
 
-    @SerializedName("total")
-    private int total;
-
-    public int getErrorCode() {
-        return mErrorCode;
+    public String getMessage() {
+        return message;
     }
 
-    public void setErrorCode(int errorCode) {
-        mErrorCode = errorCode;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getMsg() {
-        return mMsg;
+    public int getCode() {
+        return code;
     }
 
-    public void setMsg(String msg) {
-        mMsg = msg;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public T getData() {
@@ -45,21 +42,12 @@ public class BaseResponse<T> {
         this.data = data;
     }
 
-    public int getTotal() {
-        return total;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
     @Override
     public String toString() {
         return "BaseResponse{" +
-                "mErrorCode=" + mErrorCode +
-                ", mMsg='" + mMsg + '\'' +
+                "message='" + message + '\'' +
+                ", code=" + code +
                 ", data=" + data +
-                ", total=" + total +
                 '}';
     }
 }

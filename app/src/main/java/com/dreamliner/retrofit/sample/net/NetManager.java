@@ -4,18 +4,17 @@ import android.webkit.URLUtil;
 
 import com.dreamliner.retrofit.sample.AppContext;
 import com.dreamliner.retrofit.sample.net.base.DlException;
-import com.dreamliner.retrofit.sample.net.client.ShopClient;
+import com.dreamliner.retrofit.sample.net.client.GovClient;
 import com.dreamliner.retrofit.sample.util.AppUtil;
 
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.dreamliner.retrofit.sample.net.HttpUrl.SHOP_URL;
+import static com.dreamliner.retrofit.sample.net.HttpUrl.GD_122_GOV_HOST_URL;
 import static com.dreamliner.retrofit.sample.net.base.ErrorCode.NET_DISABLE;
 
 
@@ -30,13 +29,17 @@ public enum NetManager {
 
     INSTANCE;
 
-    private ShopClient mShopClient;
+    private GovClient mGovClient;
 
-    public void initShopClient() {
+    public void init() {
+        initGovClient();
+    }
+
+    private void initGovClient() {
         OkHttpClient.Builder mOkHttpClient = new OkHttpClient.Builder();
         Retrofit.Builder mRetrofit = new Retrofit.Builder();
-        setCommonSetting(mOkHttpClient, mRetrofit, SHOP_URL);
-        mShopClient = mRetrofit.client(mOkHttpClient.build()).build().create(ShopClient.class);
+        setCommonSetting(mOkHttpClient, mRetrofit, GD_122_GOV_HOST_URL);
+        mGovClient = mRetrofit.client(mOkHttpClient.build()).build().create(GovClient.class);
     }
 
     private void setCommonSetting(OkHttpClient.Builder okhttpBuilder, Retrofit.Builder retrofitBuilder, String hostUrl) {
@@ -62,9 +65,9 @@ public enum NetManager {
         okhttpBuilder.addInterceptor(paramsInterceptor);
 
         //日志拦截器
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        okhttpBuilder.addInterceptor(loggingInterceptor);
+//        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        okhttpBuilder.addInterceptor(loggingInterceptor);
 
         okhttpBuilder.addInterceptor(chain -> {
             if (AppUtil.isNetworkAvailable(AppContext.getInstance())) {
@@ -75,7 +78,8 @@ public enum NetManager {
         });
     }
 
-    public ShopClient getShopClient() {
-        return mShopClient;
+    public GovClient getGovClient() {
+        return mGovClient;
     }
+
 }

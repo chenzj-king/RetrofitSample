@@ -2,6 +2,11 @@ package com.dreamliner.retrofit.sample.net;
 
 import com.dreamliner.retrofit.sample.net.base.DlException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -22,10 +27,10 @@ public class NetUtil {
     public static <T> ObservableTransformer<BaseResponse<T>, T> handleResult() {
         try {
             return baseResponseObservable -> baseResponseObservable
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .flatMap(baseResponse -> {
-                        if (baseResponse.getErrorCode() == 0) {
+                        if (baseResponse.getCode() == 200) {
                             if (baseResponse.getData() != null) {
                                 return Observable.just(baseResponse.getData());
                             } else {
@@ -33,41 +38,31 @@ public class NetUtil {
                                 return Observable.empty();
                             }
                         } else {
-                            return Observable.error(new DlException(baseResponse.getErrorCode(), baseResponse.getMsg()));
+                            return Observable.error(new DlException(baseResponse.getCode(), baseResponse.getMessage()));
                         }
                     });
         } catch (Exception e) {
             e.printStackTrace();
             return baseResponseObservable -> baseResponseObservable
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .flatMap(baseResponse -> Observable.error(new Throwable("服务器错误")));
         }
     }
 
-    public static <T> ObservableTransformer<BaseResponse<T>, PageWrapper<T>> handleResultWithTotal() {
+    public static MultipartBody.Part[] getPartByMap(String jsonStr) {
         try {
-            return baseResponseObservable -> baseResponseObservable
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .flatMap(baseResponse -> {
-                        if (baseResponse.getErrorCode() == 0) {
-                            if (baseResponse.getData() != null) {
-                                PageWrapper<T> pageWrapper = new PageWrapper<>(baseResponse.getData(), baseResponse.getTotal());
-                                return Observable.just(pageWrapper);
-                            } else {
-                                return Observable.empty();
-                            }
-                        } else {
-                            return Observable.error(new DlException(baseResponse.getErrorCode(), baseResponse.getMsg()));
-                        }
-                    });
-        } catch (Exception e) {
-            return baseResponseObservable -> baseResponseObservable
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .flatMap(tBaseResponse -> Observable.error(new Throwable("服务器错误")));
+            JSONObject jsonObject = new JSONObject(jsonStr);
+            Map<String, String> map = new HashMap<>();
+            for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+                String key = it.next();
+                map.put(key, jsonObject.getString(key));
+            }
+            return getPartByMap(map);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     public static MultipartBody.Part[] getPartByMap(Map<String, String> stringMap) {

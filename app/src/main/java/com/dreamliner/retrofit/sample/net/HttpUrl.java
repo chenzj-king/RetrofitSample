@@ -6,5 +6,5 @@ package com.dreamliner.retrofit.sample.net;
 
 public class HttpUrl {
 
-    public static final String SHOP_URL = "http://shop.demo580.com/";
+    public static final String GD_122_GOV_HOST_URL = "http://gd.122.gov.cn";
 }
