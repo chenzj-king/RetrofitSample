@@ -18,5 +18,4 @@ public interface GovClient {
     @Multipart
     @POST("m/mvehxh/getTfhdList")
     Observable<BaseResponse<TfhdResult>> getTfhdList(@Part MultipartBody.Part... parts);
-
 }

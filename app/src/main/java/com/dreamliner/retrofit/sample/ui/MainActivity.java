@@ -55,10 +55,11 @@ public class MainActivity extends BaseCompatActivity implements OnItemClickListe
         NetManager.INSTANCE.getGovClient().getTfhdList(getPartByMap(new Gson().toJson(new GetTfhdBody())))
                 .compose(NetUtil.handleResult())
                 .compose(bindToLifecycle())
-                .subscribe(new DlObserve<TfhdResult>() {
+                .subscribe(new DlObserve<TfhdResult>(this, "加载中...", true) {
                     @Override
                     public void onResponse(TfhdResult tfhdResult) {
-                        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
+                        //mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
+                        mBinding.optimumRv.loadFail();
                     }
 
                     @Override
