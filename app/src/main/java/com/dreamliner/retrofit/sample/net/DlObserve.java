@@ -65,11 +65,11 @@ public abstract class DlObserve<T> extends BaseObserver<T> {
     public void handleError(int errorCode, String errorMsg) {
         try {
             //需要进行一层全局的拦截.例如登录信息过期等全局弹框
+            onError(errorCode, errorMsg);
             if (isAutoShowToast) {
                 BaseCompatActivity baseCompatActivity = mWeakReference.get();
                 baseCompatActivity.showToast(errorMsg);
             }
-            onError(errorCode, errorMsg);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

@@ -19,6 +19,7 @@
             android:id="@+id/common_actionbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:right_text="重新获取"
             app:title_text="车牌列表" />
 
         <com.dreamliner.rvhelper.OptimumRecyclerView

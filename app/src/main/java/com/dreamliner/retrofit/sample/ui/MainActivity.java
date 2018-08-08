@@ -34,7 +34,7 @@ public class MainActivity extends BaseCompatActivity implements OnItemClickListe
     @Override
     protected void initViews(@Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.setContentView(this, R.layout.act_main);
-
+        mBinding.commonActionbar.getRightTv().setOnClickListener(v -> getTfhdListByNet());
         mAdapter = new BaseDBAdapter<>(this, R.layout.item_db_tfhd);
 
         mBinding.optimumRv.setLayoutManager(new LinearLayoutManager(this));
@@ -58,8 +58,7 @@ public class MainActivity extends BaseCompatActivity implements OnItemClickListe
                 .subscribe(new DlObserve<TfhdResult>(this, "加载中...", true) {
                     @Override
                     public void onResponse(TfhdResult tfhdResult) {
-                        //mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
-                        mBinding.optimumRv.loadFail();
+                        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
                     }
 
                     @Override
