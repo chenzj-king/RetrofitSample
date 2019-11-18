@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference;
  * @date 2017/3/1 16:18
  * @email admin@chenzhongjin.cn
  */
-public abstract class DlObserve<T> extends BaseObserver<T> {
+public abstract class DlObserve<T> extends BaseObserver<BaseResponse<T>> {
 
     private WeakReference<BaseCompatActivity> mWeakReference;
     private MaterialDialog mMaterialDialog;
@@ -78,8 +78,8 @@ public abstract class DlObserve<T> extends BaseObserver<T> {
     }
 
     @Override
-    public void onNext(T t) {
-        onResponse(t);
+    public void onNext(BaseResponse<T> tBaseResponse) {
+        onResponse(tBaseResponse.getData());
         onAfter();
     }
 

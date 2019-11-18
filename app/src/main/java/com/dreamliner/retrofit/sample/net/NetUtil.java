@@ -24,7 +24,7 @@ import okhttp3.MultipartBody;
  */
 public class NetUtil {
 
-    public static <T> ObservableTransformer<BaseResponse<T>, T> handleResult() {
+    public static <T> ObservableTransformer<BaseResponse<T>, BaseResponse<T>> handleResult() {
         try {
             return baseResponseObservable -> baseResponseObservable
                     .subscribeOn(Schedulers.io())
@@ -32,7 +32,7 @@ public class NetUtil {
                     .flatMap(baseResponse -> {
                         if (baseResponse.getCode() == 200) {
                             if (baseResponse.getData() != null) {
-                                return Observable.just(baseResponse.getData());
+                                return Observable.just(baseResponse);
                             } else {
                                 //这种情况是没有data的情况下需要走onComplete来进行处理
                                 return Observable.empty();

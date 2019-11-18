@@ -12,7 +12,7 @@ import com.dreamliner.retrofit.sample.databinding.ActMainBinding;
 import com.dreamliner.retrofit.sample.entity.Tfhd;
 import com.dreamliner.retrofit.sample.entity.TfhdResult;
 import com.dreamliner.retrofit.sample.entity.netbody.GetTfhdBody;
-import com.dreamliner.retrofit.sample.net.DlObserve;
+import com.dreamliner.retrofit.sample.net.BaseResponse;
 import com.dreamliner.retrofit.sample.net.NetManager;
 import com.dreamliner.retrofit.sample.net.NetUtil;
 import com.dreamliner.retrofit.sample.ui.base.BaseCompatActivity;
@@ -22,6 +22,8 @@ import com.dreamliner.rvhelper.adapter.BaseDataDBAdapter;
 import com.dreamliner.rvhelper.interfaces.OnItemClickListener;
 import com.google.gson.Gson;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import io.reactivex.observers.DisposableObserver;
 
 import static com.dreamliner.retrofit.sample.net.NetUtil.getPartByMap;
 
@@ -55,17 +57,51 @@ public class MainActivity extends BaseCompatActivity implements OnItemClickListe
         NetManager.INSTANCE.getGovClient().getTfhdList(getPartByMap(new Gson().toJson(new GetTfhdBody())))
                 .compose(NetUtil.handleResult())
                 .compose(bindToLifecycle())
-                .subscribe(new DlObserve<TfhdResult>(this, "加载中...", true) {
+                .subscribe(new DisposableObserver<BaseResponse<TfhdResult>>() {
                     @Override
-                    public void onResponse(TfhdResult tfhdResult) {
-                        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
+                    public void onNext(BaseResponse<TfhdResult> tfhdResultBaseResponse) {
                     }
 
                     @Override
-                    public void onError(int errorCode, String errorMsg) {
-                        mBinding.optimumRv.loadFail();
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
+//                .subscribe(new DisposableObserver<BaseResponse<TfhdResult>>() {
+//                    @Override
+//                    public void onNext(BaseResponse<TfhdResult> tfhdResultBaseResponse) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+//                .subscribe(new DlObserve<TfhdResult>(this, "加载中...", true) {
+//                    @Override
+//                    public void onResponse(TfhdResult tfhdResult) {
+//                        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
+//                    }
+//
+//                    @Override
+//                    public void onError(int errorCode, String errorMsg) {
+//                        mBinding.optimumRv.loadFail();
+//                    }
+//                });
+
+//        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
+//        mBinding.optimumRv.loadFail();
     }
 
     @Override
