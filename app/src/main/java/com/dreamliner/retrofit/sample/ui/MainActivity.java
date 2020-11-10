@@ -1,111 +1,59 @@
 package com.dreamliner.retrofit.sample.ui;
 
-import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.view.View;
+import android.util.Log;
 
 import com.dreamliner.retrofit.sample.R;
 import com.dreamliner.retrofit.sample.databinding.ActMainBinding;
-import com.dreamliner.retrofit.sample.entity.Tfhd;
-import com.dreamliner.retrofit.sample.entity.TfhdResult;
-import com.dreamliner.retrofit.sample.entity.netbody.GetTfhdBody;
-import com.dreamliner.retrofit.sample.net.BaseResponse;
+import com.dreamliner.retrofit.sample.entity.rsp.Device;
+import com.dreamliner.retrofit.sample.entity.rsp.Login;
+import com.dreamliner.retrofit.sample.net.DlObserve;
 import com.dreamliner.retrofit.sample.net.NetManager;
-import com.dreamliner.retrofit.sample.net.NetUtil;
 import com.dreamliner.retrofit.sample.ui.base.BaseCompatActivity;
-import com.dreamliner.retrofit.sample.util.PixelUtil;
-import com.dreamliner.rvhelper.adapter.BaseDBAdapter;
-import com.dreamliner.rvhelper.adapter.BaseDataDBAdapter;
-import com.dreamliner.rvhelper.interfaces.OnItemClickListener;
-import com.google.gson.Gson;
-import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
-import io.reactivex.observers.DisposableObserver;
+import java.util.List;
 
-import static com.dreamliner.retrofit.sample.net.NetUtil.getPartByMap;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 
-public class MainActivity extends BaseCompatActivity implements OnItemClickListener<Tfhd> {
-
-    private ActMainBinding mBinding;
-
-    private BaseDataDBAdapter<Tfhd> mAdapter;
+public class MainActivity extends BaseCompatActivity<ActMainBinding> {
 
     @Override
     protected void initViews(@Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.setContentView(this, R.layout.act_main);
-        mBinding.commonActionbar.getRightTv().setOnClickListener(v -> getTfhdListByNet());
-        mAdapter = new BaseDBAdapter<>(this, R.layout.item_db_tfhd);
 
-        mBinding.optimumRv.setLayoutManager(new LinearLayoutManager(this));
-        mBinding.optimumRv.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this).color(Color.parseColor("#efeef3"))
-                .size(PixelUtil.dp2px(1)).showLastDivider().build());
-        mBinding.optimumRv.setAdapter(mAdapter);
-        mBinding.optimumRv.setEmptyOnClick(v -> {
-            mBinding.optimumRv.showLoadingView();
-            getTfhdListByNet();
-        });
-
-        mBinding.optimumRv.setRefreshListener(ptrFrameLayout -> getTfhdListByNet());
-
-        getTfhdListByNet();
+        getDemoByNet();
+        getDemoListByNet();
     }
 
-    private void getTfhdListByNet() {
-        NetManager.INSTANCE.getGovClient().getTfhdList(getPartByMap(new Gson().toJson(new GetTfhdBody())))
-                .compose(NetUtil.handleResult())
-                .compose(bindToLifecycle())
-                .subscribe(new DisposableObserver<BaseResponse<TfhdResult>>() {
+    private void getDemoByNet() {
+        NetManager.INSTANCE.getMockClient().demo()
+                .compose(transformerOnIo())
+                .subscribe(new DlObserve<Login>(this) {
                     @Override
-                    public void onNext(BaseResponse<TfhdResult> tfhdResultBaseResponse) {
+                    public void onResponse(Login login) {
+                        Log.i("TAG", login.toString());
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(int errorCode, String errorMsg) {
+                    }
+                })
+        ;
+    }
 
+    private void getDemoListByNet() {
+        NetManager.INSTANCE.getMockClient().demoList()
+                .compose(transformerArrayOnIo())
+                .subscribe(new DlObserve<List<Device>>(this) {
+                    @Override
+                    public void onResponse(List<Device> devices) {
+                        Log.i("TAG", devices.toString());
                     }
 
                     @Override
-                    public void onComplete() {
-
+                    public void onError(int errorCode, String errorMsg) {
                     }
                 });
-//                .subscribe(new DisposableObserver<BaseResponse<TfhdResult>>() {
-//                    @Override
-//                    public void onNext(BaseResponse<TfhdResult> tfhdResultBaseResponse) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
-//                .subscribe(new DlObserve<TfhdResult>(this, "加载中...", true) {
-//                    @Override
-//                    public void onResponse(TfhdResult tfhdResult) {
-//                        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
-//                    }
-//
-//                    @Override
-//                    public void onError(int errorCode, String errorMsg) {
-//                        mBinding.optimumRv.loadFail();
-//                    }
-//                });
-
-//        mBinding.optimumRv.loadSuccess(tfhdResult.getList().getContent());
-//        mBinding.optimumRv.loadFail();
-    }
-
-    @Override
-    public void onItemClick(View v, int position, Tfhd tfhd) {
-        showToast("点击到条目" + (position + 1) + "\n" + tfhd.toString());
     }
 }

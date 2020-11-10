@@ -9,12 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.CallSuper;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +19,8 @@ import android.widget.Toast;
 import com.dreamliner.easypermissions.AfterPermissionGranted;
 import com.dreamliner.easypermissions.EasyPermissions;
 import com.dreamliner.retrofit.sample.R;
+import com.dreamliner.retrofit.sample.net.base.BaseRsp;
+import com.google.android.material.snackbar.Snackbar;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 import com.trello.rxlifecycle2.RxLifecycle;
@@ -37,16 +33,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.databinding.ViewDataBinding;
 import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
 import io.reactivex.subjects.BehaviorSubject;
 import me.yokeyword.fragmentation.SupportActivity;
 
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
+import static com.dreamliner.retrofit.sample.net.NetUtil.handleArrayResultOnIO;
+import static com.dreamliner.retrofit.sample.net.NetUtil.handleResultOnIO;
+import static com.dreamliner.retrofit.sample.net.NetUtil.observeOnMain;
 
 
-public abstract class BaseCompatActivity extends SupportActivity implements EasyPermissions.PermissionCallbacks,
+public abstract class BaseCompatActivity<T extends ViewDataBinding> extends SupportActivity implements EasyPermissions.PermissionCallbacks,
         LifecycleProvider<ActivityEvent> {
+
+    protected T mBinding;
 
     public UUID mUUID = UUID.randomUUID();
 
@@ -419,10 +427,49 @@ public abstract class BaseCompatActivity extends SupportActivity implements Easy
         return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
     }
 
+    @NonNull
+    @CheckResult
+    public <T> LifecycleTransformer<T> bindToDestroyLifecycle() {
+        return bindUntilEvent(ActivityEvent.DESTROY);
+    }
+
     @Override
     @NonNull
     @CheckResult
     public final <T> LifecycleTransformer<T> bindToLifecycle() {
         return RxLifecycleAndroid.bindActivity(lifecycleSubject);
     }
+
+    public <T> ObservableTransformer<BaseRsp<T>, T> transformerOnIo() {
+        return baseResponseObservable -> baseResponseObservable
+                .compose(handleResultOnIO())
+                .compose(bindToDestroyLifecycle());
+    }
+
+    public <T> ObservableTransformer<BaseRsp<T>, T> transformerOnMain() {
+        return baseResponseObservable -> baseResponseObservable
+                .compose(handleResultOnIO())
+                .compose(observeOnMain())
+                .compose(bindToDestroyLifecycle());
+    }
+
+    public <T> ObservableTransformer<BaseRsp<T>, T> transformerArrayOnIo() {
+        return baseResponseObservable -> baseResponseObservable
+                .compose(handleArrayResultOnIO())
+                .compose(bindToDestroyLifecycle());
+    }
+
+    public <T> ObservableTransformer<BaseRsp<T>, T> transformerArrayOnMain() {
+        return baseResponseObservable -> baseResponseObservable
+                .compose(handleArrayResultOnIO())
+                .compose(observeOnMain())
+                .compose(bindToDestroyLifecycle());
+    }
+
+    public <T> ObservableTransformer<T, T> transformerIoToMain() {
+        return baseResponseObservable -> baseResponseObservable
+                .compose(observeOnMain())
+                .compose(bindToDestroyLifecycle());
+    }
+
 }

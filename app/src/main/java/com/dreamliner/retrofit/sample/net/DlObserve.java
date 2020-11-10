@@ -9,6 +9,8 @@ import com.dreamliner.retrofit.sample.ui.base.BaseCompatActivity;
 
 import java.lang.ref.WeakReference;
 
+import io.reactivex.annotations.NonNull;
+
 
 /**
  * @author chenzj
@@ -17,7 +19,7 @@ import java.lang.ref.WeakReference;
  * @date 2017/3/1 16:18
  * @email admin@chenzhongjin.cn
  */
-public abstract class DlObserve<T> extends BaseObserver<BaseResponse<T>> {
+public abstract class DlObserve<T> extends BaseObserver<T> {
 
     private WeakReference<BaseCompatActivity> mWeakReference;
     private MaterialDialog mMaterialDialog;
@@ -73,21 +75,29 @@ public abstract class DlObserve<T> extends BaseObserver<BaseResponse<T>> {
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
-            onAfter();
+            hideLoadingDialog();
         }
     }
 
     @Override
-    public void onNext(BaseResponse<T> tBaseResponse) {
-        onResponse(tBaseResponse.getData());
-        onAfter();
+    public void onNext(@NonNull T t) {
+        onResponse(t);
     }
 
-    public void onAfter() {
+    @Override
+    public void onComplete() {
+        super.onComplete();
+        hideLoadingDialog();
+    }
+
+    public void hideLoadingDialog() {
         if (null != mMaterialDialog && Looper.getMainLooper().getThread() == Thread.currentThread()) {
             mMaterialDialog.dismiss();
             mMaterialDialog = null;
         }
+    }
+
+    public void onAfter() {
     }
 
     public abstract void onResponse(T t);

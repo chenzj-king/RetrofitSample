@@ -3,18 +3,19 @@ package com.dreamliner.retrofit.sample.net;
 import android.webkit.URLUtil;
 
 import com.dreamliner.retrofit.sample.AppContext;
+import com.dreamliner.retrofit.sample.BuildConfig;
 import com.dreamliner.retrofit.sample.net.base.DlException;
-import com.dreamliner.retrofit.sample.net.client.GovClient;
+import com.dreamliner.retrofit.sample.net.client.MockClient;
 import com.dreamliner.retrofit.sample.util.AppUtil;
 
 import java.util.concurrent.TimeUnit;
 
+import lombok.Getter;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.dreamliner.retrofit.sample.net.HttpUrl.GD_122_GOV_HOST_URL;
 import static com.dreamliner.retrofit.sample.net.base.ErrorCode.NET_DISABLE;
 
 
@@ -25,11 +26,12 @@ import static com.dreamliner.retrofit.sample.net.base.ErrorCode.NET_DISABLE;
  * @date 2017/3/1 16:21
  * @email admin@chenzhongjin.cn
  */
+@Getter
 public enum NetManager {
 
     INSTANCE;
 
-    private GovClient mGovClient;
+    private MockClient mockClient;
 
     public void init() {
         initGovClient();
@@ -38,8 +40,8 @@ public enum NetManager {
     private void initGovClient() {
         OkHttpClient.Builder mOkHttpClient = new OkHttpClient.Builder();
         Retrofit.Builder mRetrofit = new Retrofit.Builder();
-        setCommonSetting(mOkHttpClient, mRetrofit, GD_122_GOV_HOST_URL);
-        mGovClient = mRetrofit.client(mOkHttpClient.build()).build().create(GovClient.class);
+        setCommonSetting(mOkHttpClient, mRetrofit, BuildConfig.hostUrl);
+        mockClient = mRetrofit.client(mOkHttpClient.build()).build().create(MockClient.class);
     }
 
     private void setCommonSetting(OkHttpClient.Builder okhttpBuilder, Retrofit.Builder retrofitBuilder, String hostUrl) {
@@ -77,9 +79,4 @@ public enum NetManager {
             }
         });
     }
-
-    public GovClient getGovClient() {
-        return mGovClient;
-    }
-
 }

@@ -35,7 +35,6 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
 
     @Override
     public void onError(Throwable throwable) {
-
         if (throwable instanceof IOException) {
             if (throwable instanceof UnknownHostException) {
                 //服务器异常
